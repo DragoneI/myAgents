@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- Fond carré avec coins arrondis (standard pour favicon moderne) -->
+  <rect width="512" height="512" rx="96" fill="#3338d0"/>
+  
+  <!-- Crochet gauche '[' -->
+  <path d="M 209 146 H 142 V 366 H 209 V 334 H 180 V 178 H 209 Z" fill="#FFFFFF"/>
+  
+  <!-- Crochet droit ']' -->
+  <path d="M 303 146 H 370 V 366 H 303 V 334 H 332 V 178 H 303 Z" fill="#FFFFFF"/>
+</svg>
