@@ -1,4 +1,3 @@
-<script>
 (function () {
   // ====== À MODIFIER ICI ======
   var CONFIG = {
@@ -166,4 +165,3 @@
     bars.forEach(function (b) { b.classList.add('in'); });
   }
 })();
-</script>
