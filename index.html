@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#3338D0">
-<title>myAgents | Service en maintenance</title>
-<meta name="description" content="Service indisponible en cours de maintenance.">
+<title>myAgents | Neo et Veo, deux agents IA pour les entreprises du Maroc</title>
+<meta name="description" content="Neo répond à vos visiteurs et note leurs coordonnées. Veo prépare vos relances de factures sur WhatsApp. 2 500 DH par agent, paiement unique, 1 mois d’essai gratuit.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%233338D0'/%3E%3Cpath d='M11 9h5.5a7 7 0 0 1 0 14H11z' fill='none' stroke='white' stroke-width='3.2' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,107 +15,466 @@
 <style>
   :root {
     --primary:#3338D0; --primary-deep:#23278F; --ink:#1C1E45; --muted:#555A85;
+    --accent:#FFD166;
     --paper:#F2F3FB; --soft:#EEF0FB; --line:#E3E5F3;
+    --teal:#2BB3A3; --teal-t:#0F766E; --amber:#F0A22E; --amber-t:#8A5A00; --red:#E5484D; --red-t:#BE2A31; --green:#0B6B4F;
     --display:'Bricolage Grotesque', system-ui, sans-serif;
     --body:'Figtree', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   }
+  /* Arabe : police Cairo (chargée à la demande) */
+  html[lang="ar"] {
+    --display:'Cairo', 'Segoe UI', Tahoma, system-ui, sans-serif;
+    --body:'Cairo', 'Segoe UI', Tahoma, system-ui, sans-serif;
+  }
+  html[dir="rtl"] body * { letter-spacing:0; }
+  html[dir="rtl"] .app-amt, html[dir="rtl"] .app-word, html[dir="rtl"] .fl-veo .n { letter-spacing:-.03em; }
+  html[lang="ar"] body { line-height:1.75; }
+  html[lang="ar"] .hero h1 { line-height:1.3; }
+  html[lang="ar"] h2 { line-height:1.35; }
 
   * { box-sizing:border-box; margin:0; padding:0; }
-  html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; height: 100%; }
-  body { font-family:var(--body); color:var(--ink); background:var(--primary); font-size:17px; line-height:1.55; -webkit-font-smoothing:antialiased; min-height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
-  a { color:inherit; text-decoration: none; }
+  html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+  body { font-family:var(--body); color:var(--ink); background:#fff; font-size:17px; line-height:1.55; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; }
+  button { font:inherit; color:inherit; cursor:pointer; border:none; background:none; }
+  :focus-visible { outline:3px solid var(--primary); outline-offset:3px; }
+  .hero :focus-visible, .cta-band :focus-visible { outline-color:#fff; }
   .wrap { width:100%; max-width:1060px; margin:0 auto; padding:0 22px; }
+  .i { width:20px; height:20px; flex:none; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
 
-  /* En-tête */
-  .site-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding: 24px 0; }
-  .brand { font-family:var(--display); font-weight:800; font-size:22px; letter-spacing:-.02em; color: #fff; }
+  /* Boutons */
+  .btn { display:inline-flex; align-items:center; justify-content:center; border-radius:14px; padding:15px 22px; min-height:50px; font-weight:700; font-size:16px; text-decoration:none; }
+  .btn-light { background:#fff; color:var(--primary-deep); }
+  .btn-ghost { color:#fff; box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.6); }
+  .btn-primary { background:var(--primary); color:#fff; }
 
-  /* Contenu de maintenance */
-  .maintenance-container {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 0;
-  }
-  .maintenance-card {
-    background: #fff;
-    border-radius: 32px;
-    padding: 48px 32px;
-    max-width: 560px;
-    width: 100%;
-    text-align: center;
-    box-shadow: 0 24px 60px rgba(15, 10, 60, 0.25);
-  }
-  .maintenance-icon {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 24px;
-    background: var(--soft);
-    border-radius: 20px;
-    display: grid;
-    place-items: center;
-    color: var(--primary);
-  }
-  .maintenance-icon svg {
-    width: 32px;
-    height: 32px;
-    stroke-width: 2;
-    fill: none;
-    stroke: currentColor;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  h1 {
-    font-family: var(--display);
-    font-weight: 800;
-    font-size: clamp(26px, 5vw, 34px);
-    line-height: 1.15;
-    letter-spacing: -0.03em;
-    color: var(--ink);
-  }
-  p {
-    margin-top: 14px;
-    color: var(--muted);
-    font-size: 17px;
-    line-height: 1.5;
-  }
+  /* Hero : violet plein */
+  .hero { position:relative; overflow-x:clip; color:#fff; background:var(--primary); border-radius:0 0 36px 36px; padding:calc(env(safe-area-inset-top,0px) + 20px) 0 64px; }
+  .site-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .head-right { display:flex; align-items:center; gap:10px; min-width:0; }
+  .brand { font-family:var(--display); font-weight:800; font-size:22px; letter-spacing:-.02em; text-decoration:none; }
+  .pill { background:rgba(255,255,255,.18); border-radius:999px; padding:9px 16px; font-size:14px; font-weight:700; text-decoration:none; white-space:nowrap; }
+  .lang { display:flex; gap:2px; background:rgba(255,255,255,.18); border-radius:999px; padding:3px; }
+  .lang[hidden] { display:none; }
+  .lang button { color:#fff; font-size:13px; font-weight:700; padding:7px 11px; border-radius:999px; white-space:nowrap; }
+  .lang button[aria-pressed="true"] { background:#fff; color:var(--primary-deep); }
+  .hero-grid { display:grid; gap:56px; align-items:center; margin-top:44px; }
+  .hero h1 { font-family:var(--display); font-weight:800; font-size:clamp(34px,9.6vw,72px); line-height:1.03; letter-spacing:-.035em; max-width:14ch; }
+  .lead { font-size:clamp(17px,4.5vw,19px); max-width:40ch; margin-top:20px; color:rgba(255,255,255,.84); }
 
-  /* Pied de page */
-  .foot { padding: 24px 0; font-size: 14px; color: rgba(255,255,255,0.85); text-align: center; }
+  /* Bloc de l'offre */
+  .offer { margin-top:32px; max-width:420px; padding:18px 20px; border-radius:20px; background:rgba(255,255,255,.12); box-shadow:inset 0 0 0 1px rgba(255,255,255,.22); }
+  .offer-main { display:flex; align-items:center; gap:16px; }
+  .offer-price { display:flex; align-items:baseline; gap:8px; flex:none; font-family:var(--display); font-weight:800; line-height:1; letter-spacing:-.03em; color:var(--accent); }
+  .offer-num { font-size:clamp(38px,10vw,48px); font-variant-numeric:tabular-nums; }
+  .offer-cur { font-size:20px; font-weight:700; letter-spacing:0; }
+  .offer-per { font-size:15px; line-height:1.4; color:rgba(255,255,255,.88); }
+  .offer-trial { display:flex; align-items:center; gap:10px; margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,.22); font-weight:700; font-size:16px; }
+  .offer-trial .i { color:var(--accent); width:22px; height:22px; stroke-width:2.6; }
 
-  @media (min-width: 640px) {
-    .maintenance-card { padding: 60px 48px; }
+  .cta-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:28px; }
+
+  /* Composition du hero (maquette du produit, toujours de gauche à droite) */
+  .stage { position:relative; width:min(340px,100%); height:500px; margin:0 auto; direction:ltr; text-align:left; }
+  .phone { position:absolute; left:0; top:36px; width:214px; height:450px; background:#fff; border:8px solid #1B1C73; border-radius:36px; overflow:hidden; box-shadow:0 32px 64px rgba(20,12,90,.45); color:var(--ink); display:flex; flex-direction:column; }
+  .ph-head { background:var(--primary); color:#fff; padding:14px; display:flex; align-items:center; gap:10px; }
+  .ph-head .st { width:9px; height:9px; flex:none; border-radius:50%; background:#3EC9B8; box-shadow:0 0 0 3px rgba(255,255,255,.22); }
+  .ph-head b { display:block; font-family:var(--display); font-weight:800; font-size:17px; line-height:1.1; letter-spacing:-.02em; }
+  .ph-head span { font-size:11.5px; opacity:.92; }
+  .ph-body { flex:1; padding:12px; display:flex; flex-direction:column; gap:8px; overflow:hidden; }
+  .ph-body .bub { font-size:12.5px; padding:8px 11px; line-height:1.4; max-width:88%; }
+  .ph-input { margin:0 10px 10px; border:1.5px solid #B7BBDB; border-radius:12px; padding:9px 11px; font-size:12px; color:#6F739A; }
+  .fl { position:absolute; z-index:2; color:var(--ink); }
+  .fl-veo { right:0; top:0; width:190px; padding:16px; background:#fff; border-radius:22px; box-shadow:0 26px 54px rgba(20,12,90,.4); font-family:'Figtree', system-ui, sans-serif; }
+  .fl-veo .n { font-family:'Bricolage Grotesque', system-ui, sans-serif; font-weight:800; font-size:34px; line-height:1; letter-spacing:-.03em; display:flex; align-items:baseline; gap:6px; font-variant-numeric:tabular-nums; }
+  .fl-veo .n small { font-family:'Figtree', system-ui, sans-serif; font-size:13px; font-weight:600; color:var(--muted); letter-spacing:0; }
+  .fl-veo p { font-size:12.5px; color:var(--muted); margin-top:6px; line-height:1.4; }
+  .fl-veo .aging { height:8px; margin-top:12px; background:var(--soft); }
+  .fl-wa { right:0; bottom:0; width:222px; padding:13px 14px; background:var(--green); color:#fff; border-radius:20px; box-shadow:0 26px 54px rgba(20,12,90,.4); font-family:'Figtree', system-ui, sans-serif; }
+  .fl-wa .row { display:flex; align-items:center; gap:8px; font-weight:700; font-size:13px; }
+  .fl-wa .row .i { width:18px; height:18px; stroke-width:2.1; }
+  .fl-wa p { margin-top:8px; font-size:12.5px; line-height:1.45; background:rgba(255,255,255,.16); border-radius:12px; padding:9px 11px; }
+  .demo-tag { display:inline-block; background:var(--soft); color:var(--primary-deep); font-size:11.5px; font-weight:700; line-height:1.3; border-radius:999px; padding:3px 10px; }
+  .fl-veo .demo-tag { margin-bottom:8px; }
+
+  /* Pour qui */
+  .who { padding:48px 0 8px; }
+  .who h2 { font-size:clamp(22px,5vw,28px); max-width:none; letter-spacing:-.02em; }
+  .chips { list-style:none; display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; }
+  .chips li { display:inline-flex; align-items:center; gap:10px; background:var(--soft); border-radius:999px; padding:11px 18px 11px 14px; font-weight:600; font-size:15px; }
+  .chips .i { color:var(--primary); width:22px; height:22px; }
+
+  /* Blocs produits */
+  .block { padding:72px 0; }
+  .block.alt { background:var(--paper); }
+  .split { display:grid; gap:36px; align-items:center; }
+  h2 { font-family:var(--display); font-weight:800; font-size:clamp(28px,6.6vw,42px); line-height:1.08; letter-spacing:-.03em; max-width:20ch; }
+  .copy p { margin-top:16px; max-width:52ch; color:var(--muted); }
+  .facts { list-style:none; margin-top:22px; display:grid; gap:12px; max-width:52ch; }
+  .facts li { position:relative; padding-inline-start:34px; }
+  .facts li::before { content:""; position:absolute; inset-inline-start:0; top:.2em; width:22px; height:22px; border-radius:8px; background:var(--primary) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/13px no-repeat; }
+  .copy .price { margin-top:22px; font-weight:700; color:var(--ink); }
+  .copy .btn { margin-top:16px; }
+
+  /* Maquette de conversation (Neo) */
+  .chat { background:#fff; border-radius:24px; overflow:hidden; box-shadow:0 18px 50px rgba(28,30,69,.18); max-width:400px; width:100%; margin:0 auto; }
+  .chat-head { background:var(--primary); color:#fff; padding:14px 18px; display:flex; align-items:center; gap:12px; }
+  .chat-head .st { width:10px; height:10px; flex:none; border-radius:50%; background:#3EC9B8; box-shadow:0 0 0 3px rgba(255,255,255,.2); }
+  .chat-head b { display:block; font-family:var(--display); font-size:20px; font-weight:800; letter-spacing:-.02em; line-height:1.1; }
+  .chat-head span { font-size:13px; opacity:.92; }
+  .chat-body { padding:16px; display:flex; flex-direction:column; gap:10px; }
+  .bub { max-width:85%; padding:10px 14px; border-radius:18px; font-size:15px; line-height:1.45; }
+  .bub.bot { align-self:flex-start; background:var(--soft); border-end-start-radius:6px; }
+  .bub.me { align-self:flex-end; background:var(--primary); color:#fff; border-end-end-radius:6px; }
+  .bub.lead { align-self:stretch; max-width:100%; background:#fff; border:1.5px solid var(--soft); padding:12px; border-radius:16px; }
+  .bub.lead b { font-family:var(--display); font-size:16px; }
+  .mini { display:block; text-align:center; border-radius:12px; padding:11px; font-weight:700; font-size:14px; margin-top:8px; }
+  .mini.wa { background:var(--green); color:#fff; }
+  .mini.soft { background:var(--soft); }
+
+  /* Maquette de l'application (Veo, en français comme l'application) */
+  .app { --display:'Bricolage Grotesque', system-ui, sans-serif; --body:'Figtree', system-ui, sans-serif; direction:ltr; text-align:left; font-family:var(--body); background:#fff; border-radius:24px; overflow:hidden; box-shadow:0 18px 50px rgba(28,30,69,.18); max-width:400px; width:100%; margin:0 auto; line-height:1.5; }
+  .app-top { background:var(--primary); color:#fff; padding:20px 20px 22px; border-radius:0 0 24px 24px; }
+  .app-bar { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .app-bar .demo-tag { background:rgba(255,255,255,.22); color:#fff; }
+  .app-word { font-family:var(--display); font-weight:800; font-size:22px; letter-spacing:-.03em; }
+  .app-amt { font-family:var(--display); font-weight:800; font-size:46px; line-height:1; letter-spacing:-.03em; margin-top:16px; display:flex; align-items:baseline; gap:8px; font-variant-numeric:tabular-nums; }
+  .app-amt small { font-family:var(--body); font-size:16px; font-weight:600; opacity:.85; letter-spacing:0; }
+  .app-sub { font-size:14px; margin-top:6px; color:rgba(255,255,255,.92); }
+  .aging { display:flex; gap:3px; height:10px; margin-top:16px; border-radius:999px; overflow:hidden; background:rgba(255,255,255,.16); clip-path:inset(0 100% 0 0); transition:clip-path 1s cubic-bezier(.2,.7,.2,1); }
+  .aging.in { clip-path:inset(0); }
+  .aging i { display:block; min-width:6px; }
+  .arow { position:relative; padding:14px 16px 14px 22px; border-bottom:1px solid var(--line); }
+  .arow:last-child { border-bottom:none; }
+  .arow::before { content:""; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--pc); }
+  .arow.teal { --pc:var(--teal); --pt:var(--teal-t); }
+  .arow.amber { --pc:var(--amber); --pt:var(--amber-t); }
+  .arow.red { --pc:var(--red); --pt:var(--red-t); }
+  .arow-head { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .arow b { display:block; font-size:15px; }
+  .arow .st { font-size:13px; font-weight:600; color:var(--pt); }
+  .arow .amt { font-family:var(--display); font-weight:700; font-size:16px; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .arow-msg { margin-top:10px; background:#FAFAFE; border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; font-size:13.5px; line-height:1.45; }
+
+  /* Pourquoi */
+  .why-grid { display:grid; gap:32px; }
+  .why-intro { margin-top:14px; color:var(--muted); max-width:40ch; }
+  .why { list-style:none; }
+  .why li { display:flex; gap:16px; padding:22px 0; border-top:1px solid #D9DCF1; }
+  .why li:last-child { border-bottom:1px solid #D9DCF1; }
+  .ico { flex:none; width:48px; height:48px; border-radius:14px; background:#fff; color:var(--primary); display:grid; place-items:center; box-shadow:inset 0 0 0 1.5px #D9DCF1; }
+  .ico .i { width:24px; height:24px; stroke-width:1.8; }
+  .why h3 { font-family:var(--display); font-size:19px; font-weight:700; letter-spacing:-.01em; line-height:1.25; }
+  .why p { margin-top:4px; color:var(--muted); }
+
+  /* Étapes */
+  .steps { list-style:none; counter-reset:s; display:grid; gap:28px; margin-top:36px; }
+  .steps li { counter-increment:s; padding-top:18px; border-top:3px solid var(--primary); }
+  .steps li::before { content:counter(s); display:block; font-family:var(--display); font-weight:800; font-size:40px; line-height:1; letter-spacing:-.03em; color:var(--primary); margin-bottom:10px; }
+  .steps h3 { font-family:var(--display); font-size:20px; font-weight:700; letter-spacing:-.01em; }
+  .steps p { margin-top:6px; color:var(--muted); }
+  .trial { margin-top:32px; padding:16px 18px; border-radius:16px; background:var(--soft); font-weight:600; max-width:60ch; }
+
+  /* FAQ */
+  .faq { margin-top:28px; max-width:720px; }
+  details { border-bottom:1px solid #D9DCF1; }
+  summary { list-style:none; cursor:pointer; padding:18px 0; padding-inline-end:36px; font-weight:700; position:relative; }
+  summary::-webkit-details-marker { display:none; }
+  summary::after { content:""; position:absolute; inset-inline-end:6px; top:50%; width:9px; height:9px; border-right:2px solid var(--muted); border-bottom:2px solid var(--muted); transform:translateY(-70%) rotate(45deg); transition:transform .2s; }
+  details[open] summary::after { transform:translateY(-30%) rotate(-135deg); }
+  details p { padding:0 0 18px; color:var(--muted); max-width:60ch; }
+
+  /* Appel final : violet plein */
+  .cta-band { background:var(--primary); color:#fff; border-radius:36px 36px 0 0; padding:64px 0 120px; }
+  .cta-band h2 { max-width:16ch; }
+  .cta-band p { margin-top:14px; max-width:46ch; color:rgba(255,255,255,.9); }
+  .cta-band .btn { margin-top:26px; }
+  .foot { margin-top:56px; padding-top:22px; border-top:1px solid rgba(255,255,255,.3); display:flex; flex-wrap:wrap; gap:8px 20px; font-size:14px; color:rgba(255,255,255,.92); }
+
+  @media (max-width:560px) {
+    .pill { display:none; }
+  }
+  @media (min-width:860px) {
+    .hero-grid { grid-template-columns:1.1fr .9fr; gap:56px; margin-top:56px; }
+    .split { grid-template-columns:1fr 1fr; gap:64px; }
+    .split.rev .visual { order:-1; }
+    .why-grid { grid-template-columns:.85fr 1.15fr; gap:72px; align-items:start; }
+    .steps { grid-template-columns:repeat(3,1fr); gap:40px; }
+    .block { padding:96px 0; }
+    .who { padding-top:64px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition:none !important; animation:none !important; }
+    html { scroll-behavior:auto; }
+    .aging { clip-path:none; }
   }
 </style>
 </head>
 <body>
 
+<section class="hero" id="top">
   <div class="wrap">
     <header class="site-head">
-      <div class="brand">myAgents</div>
-    </header>
-  </div>
-
-  <main class="maintenance-container">
-    <div class="wrap">
-      <div class="maintenance-card">
-        <div class="maintenance-icon">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-          </svg>
+      <a class="brand" id="brand" href="#top">myAgents</a></a>
+      <div class="head-right">
+        <div class="lang" id="lang" role="group" data-i18n-aria="lang.label" aria-label="Langue" hidden>
+          <button type="button" data-lang="fr" lang="fr" aria-pressed="true">Français</button>
+          <button type="button" data-lang="en" lang="en" aria-pressed="false">English</button>
+          <button type="button" data-lang="ar" lang="ar" aria-pressed="false">العربية</button>
         </div>
-        <h1>Service indisponible en cours de maintenance</h1>
-        <p>Nous améliorons actuellement nos systèmes pour vous offrir une meilleure expérience. Nous serons de retour très prochainement.</p>
+        <a class="pill" data-wa="general" data-i18n="cta.wa" href="#">Écrire sur WhatsApp</a>
+      </div>
+    </header>
+
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <h1 data-i18n="hero.h1">Répondez à vos clients. Faites payer vos factures.</h1>
+        <p class="lead" data-i18n="hero.lead">Deux agents IA pour les entreprises du Maroc&nbsp;: Neo répond à vos visiteurs, Veo prépare vos relances de factures sur WhatsApp.</p>
+
+        <div class="offer">
+          <div class="offer-main">
+            <div class="offer-price"><span class="offer-num" id="offer-num">2 500</span><span class="offer-cur" data-i18n="offer.cur">DH</span></div>
+            <p class="offer-per" data-i18n="offer.per">par agent, paiement unique, à vie</p>
+          </div>
+          <p class="offer-trial"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><span data-i18n="offer.trial">1 mois d’essai gratuit</span></p>
+        </div>
+
+        <div class="cta-row">
+          <a class="btn btn-light" data-wa="general" data-i18n="cta.wa" href="#">Écrire sur WhatsApp</a>
+          <button class="btn btn-ghost" type="button" data-open-neo data-i18n="cta.try">Essayer Neo</button>
+        </div>
+      </div>
+
+      <div class="stage" aria-hidden="true">
+        <div class="phone">
+          <div class="ph-head"><div class="st"></div><div><b>Neo</b><span data-i18n="chat.role">Agent commercial</span></div></div>
+          <div class="ph-body">
+            <div class="bub bot" dir="auto" data-i18n="chat.b1">Bonjour&nbsp;! Je suis Neo. Comment puis-je vous aider aujourd’hui&nbsp;?</div>
+            <div class="bub me" dir="auto" data-i18n="chat.b2">Je voudrais un rendez-vous pour mardi</div>
+            <div class="bub bot" dir="auto" data-i18n="chat.b3">Avec plaisir. Pouvez-vous me donner votre nom et votre numéro de téléphone&nbsp;?</div>
+            <div class="bub me" dir="auto" data-i18n="chat.b4">Samir Alaoui, 06 12 34 56 78</div>
+          </div>
+          <div class="ph-input" dir="auto" data-i18n="chat.input">Écrivez un message…</div>
+        </div>
+        <div class="fl fl-veo" lang="fr" dir="ltr">
+          <span class="demo-tag" dir="auto" data-i18n="demo.tag">Exemple</span>
+          <div class="n">8 600<small>MAD</small></div>
+          <p>à récupérer sur 3 factures en retard.</p>
+          <div class="aging">
+            <i style="flex:1800 1 0;background:#2BB3A3"></i>
+            <i style="flex:4900 1 0;background:#F0A22E"></i>
+            <i style="flex:1900 1 0;background:#E5484D"></i>
+          </div>
+        </div>
+        <div class="fl fl-wa" lang="fr" dir="ltr">
+          <div class="row"><svg class="i" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>Relance prête</div>
+          <p>Bonjour Clinique Atlas, la facture de 4 900 MAD est échue depuis 9 jours. Merci de nous indiquer une date de règlement.</p>
+        </div>
       </div>
     </div>
-  </main>
+  </div>
+</section>
 
-  <footer class="wrap">
-    <div class="foot">
-      myAgents, Agadir
+<section class="who">
+  <div class="wrap">
+    <h2 data-i18n="who.h2">Pour les entreprises comme la vôtre</h2>
+    <ul class="chips">
+      <li><svg class="i" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><span data-i18n="who.1">Garages</span></li>
+      <li><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg><span data-i18n="who.2">Cliniques et cabinets</span></li>
+      <li><svg class="i" viewBox="0 0 24 24"><path d="M3 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2a5 5 0 0 0-5 5v6a2 2 0 0 0 2 2h3Zm0 0v7"/></svg><span data-i18n="who.3">Restaurants et boulangeries</span></li>
+      <li><svg class="i" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg><span data-i18n="who.4">Écoles et centres de formation</span></li>
+      <li><svg class="i" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span data-i18n="who.5">Agences</span></li>
+      <li><svg class="i" viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M3 9h18"/><path d="M9 20v-6h6v6"/></svg><span data-i18n="who.6">Boutiques</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="block alt" id="outils">
+  <div class="wrap split">
+    <div class="copy">
+      <h2 data-i18n="neo.h2">Neo accueille vos visiteurs et note leurs coordonnées</h2>
+      <p data-i18n="neo.p">Installé sur votre site, Neo répond aux questions de vos visiteurs et leur demande leur nom et leur numéro. Le visiteur termine d’un appui sur WhatsApp, SMS ou email, et vous recevez sa demande avec ses coordonnées déjà remplies.</p>
+      <ul class="facts">
+        <li data-i18n="neo.f1">Répond dans la langue de votre visiteur, à toute heure</li>
+        <li data-i18n="neo.f2">Demande le nom et le numéro de téléphone du visiteur</li>
+        <li data-i18n="neo.f3">S’installe sur votre site avec une seule ligne de code</li>
+      </ul>
+      <p class="price" data-price="neo"></p>
+      <a class="btn btn-primary" data-wa="neo" data-i18n="neo.cta" href="#">Je veux Neo</a>
     </div>
-  </footer>
+    <div class="visual">
+      <div class="chat" role="img" data-i18n-aria="chat.aria" aria-label="Exemple de conversation avec Neo : un visiteur demande un rendez-vous, Neo recueille son nom et son numéro, puis propose de confirmer sur WhatsApp.">
+        <div class="chat-head"><div class="st"></div><div><b>Neo</b><span data-i18n="chat.role">Agent commercial</span></div></div>
+        <div class="chat-body" aria-hidden="true">
+          <div class="bub bot" data-i18n="chat.b1">Bonjour&nbsp;! Je suis Neo. Comment puis-je vous aider aujourd’hui&nbsp;?</div>
+          <div class="bub me" data-i18n="chat.b2">Je voudrais un rendez-vous pour mardi</div>
+          <div class="bub bot" data-i18n="chat.b3">Avec plaisir. Pouvez-vous me donner votre nom et votre numéro de téléphone&nbsp;?</div>
+          <div class="bub me" data-i18n="chat.b4">Samir Alaoui, 06 12 34 56 78</div>
+          <div class="bub bot" data-i18n="chat.b5">Merci Samir. Appuyez sur WhatsApp pour confirmer votre rendez-vous.</div>
+          <div class="bub lead">
+            <b data-i18n="chat.leadtitle">Finalisez votre demande&nbsp;:</b>
+            <span class="mini wa" data-i18n="chat.wa">Continuer sur WhatsApp</span>
+            <span class="mini soft" data-i18n="chat.sms">Envoyer par SMS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap split rev">
+    <div class="copy">
+      <h2 data-i18n="veo.h2">Veo prépare vos relances de factures</h2>
+      <p data-i18n="veo.p">Veo suit vos factures impayées et prépare les messages de relance, du rappel aimable au dernier avis selon le retard. Vous relisez le texte, vous appuyez sur WhatsApp, et le message part depuis votre propre numéro.</p>
+      <ul class="facts">
+        <li data-i18n="veo.f1">Messages rédigés par l’IA, que vous pouvez modifier avant l’envoi</li>
+        <li data-i18n="veo.f2">Le ton s’adapte au nombre de jours de retard</li>
+        <li data-i18n="veo.f3">Vous gardez le contrôle&nbsp;: rien ne part sans votre appui</li>
+        <li data-i18n="veo.f4">Un code d’accès personnel protège vos données</li>
+      </ul>
+      <p class="price" data-price="veo"></p>
+      <a class="btn btn-primary" data-wa="veo" data-i18n="veo.cta" href="#">Je veux Veo</a>
+    </div>
+    <div class="visual">
+      <div class="app" lang="fr" dir="ltr" role="img" data-i18n-aria="veo.aria" aria-label="Exemple d’aperçu de Veo : 8 600 dirhams de factures en retard à récupérer sur 3 factures, avec la liste des factures et un message de relance prêt à envoyer sur WhatsApp.">
+        <div aria-hidden="true">
+          <div class="app-top">
+            <div class="app-bar">
+              <div class="app-word">veo</div>
+              <span class="demo-tag" dir="auto" data-i18n="demo.tag">Exemple</span>
+            </div>
+            <div class="app-amt">8 600<small>MAD</small></div>
+            <div class="app-sub">à récupérer sur 3 factures en retard.</div>
+            <div class="aging">
+              <i style="flex:1800 1 0;background:#3EC9B8"></i>
+              <i style="flex:4900 1 0;background:#F5B03C"></i>
+              <i style="flex:1900 1 0;background:#FF7A7A"></i>
+            </div>
+          </div>
+          <div class="arow red">
+            <div class="arow-head">
+              <div><b>Boulangerie Salam</b><span class="st">Échue depuis 20 jours</span></div>
+              <div class="amt">1 900 MAD</div>
+            </div>
+          </div>
+          <div class="arow amber">
+            <div class="arow-head">
+              <div><b>Clinique Atlas</b><span class="st">Échue depuis 9 jours</span></div>
+              <div class="amt">4 900 MAD</div>
+            </div>
+            <div class="arow-msg">Bonjour Clinique Atlas, sauf erreur de notre part, la facture de 4 900 MAD, échue depuis 9 jours, reste impayée. Merci de procéder au règlement ou de nous indiquer une date.</div>
+            <span class="mini wa">Relancer sur WhatsApp</span>
+          </div>
+          <div class="arow teal">
+            <div class="arow-head">
+              <div><b>Garage Anfa</b><span class="st">Échue depuis 3 jours</span></div>
+              <div class="amt">1 800 MAD</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block alt" id="pourquoi">
+  <div class="wrap why-grid">
+    <div>
+      <h2 data-i18n="why.h2">Pourquoi choisir myAgents</h2>
+      <p class="why-intro" data-i18n="why.p">Deux outils simples, pensés pour les entreprises qui n’ont pas le temps de gérer un logiciel compliqué.</p>
+    </div>
+    <ul class="why">
+      <li>
+        <span class="ico" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></span>
+        <div><h3 data-i18n="why.1.h">Sur WhatsApp, là où sont vos clients</h3><p data-i18n="why.1.p">Vos visiteurs et vos clients utilisent déjà WhatsApp. Neo et Veo s’appuient dessus au lieu de leur demander d’adopter un nouvel outil.</p></div>
+      </li>
+      <li>
+        <span class="ico" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+        <div><h3 data-i18n="why.2.h">Disponible à toute heure</h3><p data-i18n="why.2.p">Neo répond à vos visiteurs la nuit, le week-end et pendant vos congés, et note leurs coordonnées pour que vous les rappeliez.</p></div>
+      </li>
+      <li>
+        <span class="ico" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg></span>
+        <div><h3 data-i18n="why.3.h">Vous gardez le contrôle</h3><p data-i18n="why.3.p">Rien n’est envoyé sans votre appui. Vous relisez chaque relance et vous la modifiez si vous le souhaitez.</p></div>
+      </li>
+      <li>
+        <span class="ico" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span>
+        <div><h3 data-i18n="why.4.h">Dans la langue de vos clients</h3><p data-i18n="why.4.p">Neo répond en français, en arabe ou en anglais, selon la langue de votre visiteur.</p></div>
+      </li>
+      <li>
+        <span class="ico" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        <div><h3 data-i18n="why.5.h">Vos données restent à vous</h3><p data-i18n="why.5.p">Chaque entreprise accède uniquement à ses propres données, avec un code d’accès personnel.</p></div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="block" id="comment">
+  <div class="wrap">
+    <h2 data-i18n="steps.h2">Comment démarrer</h2>
+    <ol class="steps">
+      <li>
+        <h3 data-i18n="steps.1.h">Vous nous écrivez</h3>
+        <p data-i18n="steps.1.p">Un message sur WhatsApp pour nous décrire votre activité et choisir Neo, Veo ou les deux.</p>
+      </li>
+      <li>
+        <h3 data-i18n="steps.2.h">Nous préparons votre outil</h3>
+        <p data-i18n="steps.2.p">Neo est réglé avec le nom, les services et le numéro de votre entreprise. Veo reçoit votre espace de suivi.</p>
+      </li>
+      <li>
+        <h3 data-i18n="steps.3.h">Vous recevez votre accès</h3>
+        <p data-i18n="steps.3.p">Un code personnel pour Veo, une ligne à ajouter à votre site pour Neo.</p>
+      </li>
+    </ol>
+    <p class="trial" data-i18n="trial">Le premier mois est gratuit&nbsp;: vous testez avant de payer.</p>
+  </div>
+</section>
+
+<section class="block alt">
+  <div class="wrap">
+    <h2 data-i18n="faq.h2">Questions fréquentes</h2>
+    <div class="faq">
+      <details>
+        <summary data-i18n="faq.p.q">Combien ça coûte&nbsp;?</summary>
+        <p data-i18n="faq.p.a">2 500 DH par agent, en un seul paiement, sans abonnement, à vie. Le premier mois est gratuit&nbsp;: vous testez avant de payer.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq.1.q">Dois-je installer une application&nbsp;?</summary>
+        <p data-i18n="faq.1.a">Non. Veo s’ouvre dans le navigateur de votre téléphone. Neo s’ajoute à votre site avec une seule ligne de code.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq.2.q">Les messages partent-ils tout seuls&nbsp;?</summary>
+        <p data-i18n="faq.2.a">Non. Veo prépare le message, vous le relisez et vous l’envoyez vous-même depuis votre WhatsApp. Vous gardez le contrôle sur chaque relance.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq.3.q">Mes données sont-elles protégées&nbsp;?</summary>
+        <p data-i18n="faq.3.a">Chaque entreprise accède uniquement à ses propres données, avec un code d’accès personnel.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq.4.q">En quelle langue répond Neo&nbsp;?</summary>
+        <p data-i18n="faq.4.a">Neo répond dans la langue de votre visiteur&nbsp;: français, arabe ou anglais.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="wrap">
+    <h2 data-i18n="band.h2">Parlons de votre activité</h2>
+    <p data-i18n="band.p">Écrivez-nous sur WhatsApp. Nous vous montrons Neo et Veo avec des exemples de votre métier.</p>
+    <a class="btn btn-light" data-wa="general" data-i18n="cta.wa" href="#">Écrire sur WhatsApp</a>
+    <div class="foot">
+      <span id="foot-line">myAgents, Agadir</span>
+      <a id="mail" href="#"></a>
+      <span id="year"></span>
+    </div>
+  </div>
+</section>
+
+<script src="script.js"></script>
+
+<!-- Neo, en direct -->
+<script src="https://neocompanybot.vercel.app/widget.js?v=7" data-key="9c37d3c0cd134b23"></script>
 
 </body>
-</html>
+        </html>
