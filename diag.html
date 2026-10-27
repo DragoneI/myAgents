@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Diagnostic</title>
+<style>
+  body { font:15px/1.5 system-ui, sans-serif; padding:16px; max-width:640px; margin:0 auto; }
+  h1 { font-size:20px; margin-bottom:12px; }
+  li { margin:8px 0 8px 18px; word-break:break-word; }
+  .ok { color:#0B6B4F; }
+  .ko { color:#BE2A31; font-weight:700; }
+</style>
+</head>
+<body>
+<h1>Diagnostic de la page</h1>
+<ul id="out"></ul>
+<script>
+(function () {
+  var out = document.getElementById('out');
+  function add(cls, text) {
+    var li = document.createElement('li');
+    if (cls) li.className = cls;
+    li.textContent = text;
+    out.appendChild(li);
+  }
+  function line(ok, text) { add(ok ? 'ok' : 'ko', (ok ? 'OK : ' : 'ERREUR : ') + text); }
+  function note(text) { add('', text); }
+
+  function analyse(html, data) {
+    note('index.html : ' + html.length + ' caractères');
+
+    var end = html.lastIndexOf('</html>');
+    if (end < 0) {
+      line(false, 'la balise </html> est absente');
+    } else {
+      var after = html.slice(end + 7).trim();
+      line(after === '', after === '' ? 'le fichier se termine bien par </html>' : 'du texte reste après </html> : ' + after.slice(0, 60));
+    }
+
+    line(html.indexOf('id="lang"') > -1, 'le sélecteur de langue (id="lang") est dans la page');
+
+    var m, fetches = [];
+    var reFetch = /fetch\(\s*['"]([^'"]+)['"]/g;
+    while ((m = reFetch.exec(html))) fetches.push(m[1]);
+    note('fichiers demandés par la page (fetch) : ' + (fetches.join(', ') || 'aucun'));
+
+    var ids = [], missing = [];
+    var reId = /getElementById\(\s*['"]([^'"]+)['"]\s*\)/g;
+    while ((m = reId.exec(html))) {
+      if (m[1].indexOf('neo-') !== 0 && ids.indexOf(m[1]) < 0) ids.push(m[1]);
+    }
+    ids.forEach(function (id) { if (html.indexOf('id="' + id + '"') < 0) missing.push(id); });
+    line(missing.length === 0, missing.length
+      ? 'identifiants utilisés par le script mais absents de la page : ' + missing.join(', ')
+      : 'tous les identifiants utilisés par le script existent dans la page');
+
+    if (data && data.fr) {
+      var keys = [], lost = [];
+      var reKey = /data-i18n(?:-aria)?="([^"]+)"/g;
+      while ((m = reKey.exec(html))) { if (keys.indexOf(m[1]) < 0) keys.push(m[1]); }
+      keys.forEach(function (k) {
+        if (!(k in data.fr) && html.indexOf("'" + k + "'") < 0) lost.push(k);
+      });
+      line(lost.length === 0, lost.length
+        ? 'textes introuvables dans le fichier de traduction : ' + lost.join(', ')
+        : 'tous les textes de la page existent dans le fichier de traduction');
+
+      ['en', 'ar'].forEach(function (l) {
+        var gap = Object.keys(data.fr).filter(function (k) { return !(data[l] && k in data[l]); });
+        line(gap.length === 0, 'langue ' + l + ' : ' + (gap.length ? 'clés manquantes : ' + gap.join(', ') : 'complète'));
+      });
+    }
+  }
+
+  var stamp = '?t=' + Date.now();
+  fetch('/translations.json' + stamp, { cache: 'no-store' })
+    .then(function (r) {
+      line(r.ok, 'translations.json : HTTP ' + r.status + ' (' + (r.headers.get('content-type') || 'type inconnu') + ')');
+      return r.text();
+    })
+    .then(function (txt) {
+      var data = null;
+      try {
+        data = JSON.parse(txt);
+        line(true, 'translations.json est un JSON valide, langues : ' + Object.keys(data).join(', '));
+      } catch (e) {
+        line(false, 'translations.json est invalide : ' + e.message);
+      }
+      return fetch('/index.html' + stamp, { cache: 'no-store' })
+        .then(function (r) {
+          line(r.ok, 'index.html : HTTP ' + r.status);
+          return r.text();
+        })
+        .then(function (html) { analyse(html, data); });
+    })
+    .catch(function (e) { line(false, 'échec : ' + e.message); });
+})();
+</script>
+</body>
+</html>
