@@ -10,8 +10,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400..700&display=swap" rel="stylesheet">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-
 <style>
   :root {
     --primary:#3338D0; --primary-deep:#23278F; --ink:#1C1E45; --muted:#555A85;
@@ -38,7 +36,7 @@
   a { color:inherit; }
   button { font:inherit; color:inherit; cursor:pointer; border:none; background:none; }
   :focus-visible { outline:3px solid var(--primary); outline-offset:3px; }
-  .hero :focus-visible, .cta-band :focus-visible { outline-color:#fff; }
+  .hero :focus-visible, .cta-band :focus-visible, .site-foot :focus-visible { outline-color:#fff; }
   .wrap { width:100%; max-width:1060px; margin:0 auto; padding:0 22px; }
   .i { width:20px; height:20px; flex:none; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
 
@@ -55,7 +53,6 @@
   .brand { font-family:var(--display); font-weight:800; font-size:22px; letter-spacing:-.02em; text-decoration:none; }
   .pill { background:rgba(255,255,255,.18); border-radius:999px; padding:9px 16px; font-size:14px; font-weight:700; text-decoration:none; white-space:nowrap; }
   .lang { display:flex; gap:2px; background:rgba(255,255,255,.18); border-radius:999px; padding:3px; }
-  .lang[hidden] { display:none; }
   .lang button { color:#fff; font-size:13px; font-weight:700; padding:7px 11px; border-radius:999px; white-space:nowrap; }
   .lang button[aria-pressed="true"] { background:#fff; color:var(--primary-deep); }
   .hero-grid { display:grid; gap:56px; align-items:center; margin-top:44px; }
@@ -185,11 +182,30 @@
   details p { padding:0 0 18px; color:var(--muted); max-width:60ch; }
 
   /* Appel final : violet plein */
-  .cta-band { background:var(--primary); color:#fff; border-radius:36px 36px 0 0; padding:64px 0 120px; }
+  .cta-band { background:var(--primary); color:#fff; border-radius:36px 36px 0 0; padding:64px 0 72px; }
   .cta-band h2 { max-width:16ch; }
   .cta-band p { margin-top:14px; max-width:46ch; color:rgba(255,255,255,.9); }
   .cta-band .btn { margin-top:26px; }
-  .foot { margin-top:56px; padding-top:22px; border-top:1px solid rgba(255,255,255,.3); display:flex; flex-wrap:wrap; gap:8px 20px; font-size:14px; color:rgba(255,255,255,.92); }
+
+  /* Pied de page */
+  .site-foot { background:var(--ink); color:rgba(255,255,255,.78); padding:64px 0 96px; }
+  .foot-grid { display:grid; grid-template-columns:1fr 1fr; gap:36px 20px; }
+  .foot-brand, .foot-col.contact { grid-column:1 / -1; }
+  .foot-brand .brand { display:inline-block; color:#fff; font-size:26px; }
+  .foot-tag { margin-top:14px; max-width:38ch; font-size:15px; line-height:1.6; }
+  .foot-brand .btn { margin-top:20px; min-height:46px; padding:12px 18px; font-size:15px; }
+  .foot-col h3 { font-family:var(--display); font-weight:700; font-size:16px; letter-spacing:-.01em; color:#fff; margin-bottom:14px; }
+  .foot-col ul { list-style:none; display:grid; gap:10px; }
+  .foot-col li, .foot-col a { font-size:15px; }
+  .foot-col a { text-decoration:none; }
+  .foot-col a:hover { color:#fff; text-decoration:underline; }
+  .foot-bottom { margin-top:48px; padding-top:22px; border-top:1px solid rgba(255,255,255,.14); display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px 20px; font-size:14px; color:rgba(255,255,255,.62); }
+  .foot-bottom a { text-decoration:none; }
+  .foot-bottom a:hover { color:#fff; text-decoration:underline; }
+
+  /* Message d'information */
+  #toast { position:fixed; left:50%; transform:translateX(-50%); bottom:calc(env(safe-area-inset-bottom,0px) + 90px); background:var(--ink); color:#fff; padding:11px 16px; border-radius:12px; font-size:14px; font-weight:500; max-width:90%; text-align:center; display:none; z-index:40; }
+  #toast.show { display:block; }
 
   @media (max-width:560px) {
     .pill { display:none; }
@@ -202,6 +218,8 @@
     .steps { grid-template-columns:repeat(3,1fr); gap:40px; }
     .block { padding:96px 0; }
     .who { padding-top:64px; }
+    .foot-grid { grid-template-columns:1.5fr 1fr 1fr 1.3fr; gap:48px; }
+    .foot-brand, .foot-col.contact { grid-column:auto; }
   }
   @media (prefers-reduced-motion: reduce) {
     * { transition:none !important; animation:none !important; }
@@ -215,9 +233,9 @@
 <section class="hero" id="top">
   <div class="wrap">
     <header class="site-head">
-      <a class="brand" id="brand" href="#top">[myAgents]</a></a>
+      <a class="brand" data-brand href="#top">myAgents</a>
       <div class="head-right">
-        <div class="lang" id="lang" role="group" data-i18n-aria="lang.label" aria-label="Langue" hidden>
+        <div class="lang" id="lang" role="group" data-i18n-aria="lang.label" aria-label="Langue">
           <button type="button" data-lang="fr" lang="fr" aria-pressed="true">Français</button>
           <button type="button" data-lang="en" lang="en" aria-pressed="false">English</button>
           <button type="button" data-lang="ar" lang="ar" aria-pressed="false">العربية</button>
@@ -322,7 +340,7 @@
   </div>
 </section>
 
-<section class="block">
+<section class="block" id="veo">
   <div class="wrap split rev">
     <div class="copy">
       <h2 data-i18n="veo.h2">Veo prépare vos relances de factures</h2>
@@ -430,7 +448,7 @@
   </div>
 </section>
 
-<section class="block alt">
+<section class="block alt" id="faq">
   <div class="wrap">
     <h2 data-i18n="faq.h2">Questions fréquentes</h2>
     <div class="faq">
@@ -463,18 +481,303 @@
     <h2 data-i18n="band.h2">Parlons de votre activité</h2>
     <p data-i18n="band.p">Écrivez-nous sur WhatsApp. Nous vous montrons Neo et Veo avec des exemples de votre métier.</p>
     <a class="btn btn-light" data-wa="general" data-i18n="cta.wa" href="#">Écrire sur WhatsApp</a>
-    <div class="foot">
-      <span id="foot-line">[myAgents]</span>
-      <a id="mail" href="#"></a>
-      <span id="year"></span>
-    </div>
   </div>
 </section>
 
-<script src="script.js"></script>
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="brand" data-brand href="#top">myAgents</a>
+        <p class="foot-tag" data-i18n="foot.tag">Des agents IA simples pour répondre à vos clients et suivre vos factures impayées, pensés pour les entreprises du Maroc.</p>
+        <a class="btn btn-light" data-wa="general" data-i18n="cta.wa" href="#">Écrire sur WhatsApp</a>
+      </div>
+
+      <nav class="foot-col" aria-labelledby="fh-products">
+        <h3 id="fh-products" data-i18n="foot.products">Produits</h3>
+        <ul>
+          <li><a href="#outils" data-i18n="foot.neo">Neo, agent commercial</a></li>
+          <li><a href="#veo" data-i18n="foot.veo">Veo, relances de factures</a></li>
+        </ul>
+      </nav>
+
+      <nav class="foot-col" aria-labelledby="fh-explore">
+        <h3 id="fh-explore" data-i18n="foot.explore">Découvrir</h3>
+        <ul>
+          <li><a href="#pourquoi" data-i18n="foot.why">Pourquoi myAgents</a></li>
+          <li><a href="#comment" data-i18n="steps.h2">Comment démarrer</a></li>
+          <li><a href="#faq" data-i18n="faq.h2">Questions fréquentes</a></li>
+        </ul>
+      </nav>
+
+      <div class="foot-col contact">
+        <h3 data-i18n="foot.contact">Contact</h3>
+        <ul>
+          <li><a data-wa="general" href="#"><span>WhatsApp</span> <span id="foot-wa-num" dir="ltr"></span></a></li>
+          <li><a id="mail" dir="ltr" href="#"></a></li>
+          <li data-i18n="foot.city">Agadir, Maroc</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="foot-bottom">
+      <p data-i18n="foot.rights">© 2026 myAgents. Tous droits réservés.</p>
+      <a href="#top" data-i18n="foot.top">Retour en haut</a>
+    </div>
+  </div>
+</footer>
+
+<div id="toast" role="status"></div>
+
+<script>
+(function () {
+  // ====== À MODIFIER ICI ======
+  var CONFIG = {
+    brand: 'myAgents',                  // ou 'myBot'
+    whatsapp: '212644006421',           // format international, sans + ni espace
+    email: 'contact@dragonetech.com',
+    price: '2 500'                      // prix par agent (laisser vide pour afficher « communiqué sur WhatsApp »)
+  };
+
+  var LANGS = ['fr', 'en', 'ar'];
+  var STORAGE_KEY = 'site_lang';
+  var dict = null;
+  var lang = 'fr';
+  var userChose = false;
+  var loading = null;
+
+  // Textes de secours (français) si translations.json ne se charge pas
+  var FALLBACK_FR = {
+    'meta.title': '{brand} | Neo et Veo, deux agents IA pour les entreprises du Maroc',
+    'offer.cur': 'DH',
+    'price.line': '{amount} {cur}, paiement unique, à vie. 1 mois d’essai gratuit.',
+    'price.ask': 'Tarif communiqué sur WhatsApp.',
+    'wa.general': 'Bonjour, je souhaite en savoir plus sur vos agents Neo et Veo.',
+    'wa.neo': 'Bonjour, je suis intéressé par Neo (agent de discussion pour mon site). Mon activité : ',
+    'wa.veo': 'Bonjour, je suis intéressé par Veo (relances de factures). Mon activité : '
+  };
+
+  // Textes du pied de page (français, anglais, arabe)
+  var EXTRA = {
+    fr: {
+      'foot.tag': 'Des agents IA simples pour répondre à vos clients et suivre vos factures impayées, pensés pour les entreprises du Maroc.',
+      'foot.products': 'Produits',
+      'foot.explore': 'Découvrir',
+      'foot.contact': 'Contact',
+      'foot.neo': 'Neo, agent commercial',
+      'foot.veo': 'Veo, relances de factures',
+      'foot.why': 'Pourquoi {brand}',
+      'foot.city': 'Agadir, Maroc',
+      'foot.rights': '© {year} {brand}. Tous droits réservés.',
+      'foot.top': 'Retour en haut'
+    },
+    en: {
+      'foot.tag': 'Simple AI agents to answer your customers and follow up unpaid invoices, built for businesses in Morocco.',
+      'foot.products': 'Products',
+      'foot.explore': 'Explore',
+      'foot.contact': 'Contact',
+      'foot.neo': 'Neo, sales agent',
+      'foot.veo': 'Veo, invoice reminders',
+      'foot.why': 'Why {brand}',
+      'foot.city': 'Agadir, Morocco',
+      'foot.rights': '© {year} {brand}. All rights reserved.',
+      'foot.top': 'Back to top'
+    },
+    ar: {
+      'foot.tag': 'وكلاء بالذكاء الاصطناعي بسيطون للرد على عملائك ومتابعة فواتيرك غير المدفوعة، صُمّموا لشركات المغرب.',
+      'foot.products': 'المنتجات',
+      'foot.explore': 'اكتشف',
+      'foot.contact': 'اتصل بنا',
+      'foot.neo': 'Neo، وكيل المبيعات',
+      'foot.veo': 'Veo، تذكير بالفواتير',
+      'foot.why': 'لماذا {brand}',
+      'foot.city': 'أكادير، المغرب',
+      'foot.rights': '© {year} {brand}. جميع الحقوق محفوظة.',
+      'foot.top': 'العودة إلى الأعلى'
+    }
+  };
+
+  // Typographie française : espace insécable avant : ; ! ? » et après «
+  function typo(s, key) {
+    if (lang !== 'fr' || key.indexOf('wa.') === 0 || key.indexOf('meta.') === 0) return s;
+    return s.replace(/ ([:;!?»])/g, '\u00A0$1').replace(/« /g, '«\u00A0');
+  }
+
+  function t(key, vars) {
+    var s = null;
+    if (dict && dict[lang] && dict[lang][key] != null) s = dict[lang][key];
+    else if (EXTRA[lang] && EXTRA[lang][key] != null) s = EXTRA[lang][key];
+    else if (dict && dict.fr && dict.fr[key] != null) s = dict.fr[key];
+    else if (EXTRA.fr[key] != null) s = EXTRA.fr[key];
+    else if (FALLBACK_FR[key] != null) s = FALLBACK_FR[key];
+    if (s == null) return '';
+    var all = Object.assign({ brand: CONFIG.brand }, vars || {});
+    s = s.replace(/\{(\w+)\}/g, function (m, k) { return all[k] != null ? all[k] : m; });
+    return typo(s, key);
+  }
+
+  function pickLang() {
+    var saved = null;
+    try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+    if (saved && LANGS.indexOf(saved) > -1) return saved;
+    var prefs = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || 'fr'];
+    for (var i = 0; i < prefs.length; i++) {
+      var c = String(prefs[i]).slice(0, 2).toLowerCase();
+      if (LANGS.indexOf(c) > -1) return c;
+    }
+    return 'fr';
+  }
+
+  var arabicFontLoaded = false;
+  function loadArabicFont() {
+    if (arabicFontLoaded) return;
+    arabicFontLoaded = true;
+    var l = document.createElement('link');
+    l.rel = 'stylesheet';
+    l.href = 'https://fonts.googleapis.com/css2?family=Cairo:wght@400..800&display=swap';
+    document.head.appendChild(l);
+  }
+
+  // +212 6 44 00 64 21
+  function prettyPhone(w) {
+    var d = String(w).replace(/\D/g, '');
+    if (d.length === 12 && d.indexOf('212') === 0) {
+      return '+212 ' + d.slice(3, 4) + ' ' + d.slice(4, 6) + ' ' + d.slice(6, 8) + ' ' + d.slice(8, 10) + ' ' + d.slice(10, 12);
+    }
+    return '+' + d;
+  }
+
+  var toastTimer = null;
+  function showToast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 3500);
+  }
+
+  function apply() {
+    var html = document.documentElement;
+    html.lang = lang;
+    html.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    if (lang === 'ar') loadArabicFont();
+
+    var V = { amount: CONFIG.price, cur: t('offer.cur'), year: new Date().getFullYear() };
+
+    // Textes traduits : quand une clé n’existe pas, le texte français du HTML est conservé
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var v = t(el.getAttribute('data-i18n'), V);
+      if (v) el.textContent = v;
+    });
+    document.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
+      var v = t(el.getAttribute('data-i18n-aria'), V);
+      if (v) el.setAttribute('aria-label', v);
+    });
+    var desc = t('meta.desc');
+    var metaDesc = document.querySelector('meta[name="description"]');
+    if (desc && metaDesc) metaDesc.setAttribute('content', desc);
+
+    document.title = t('meta.title');
+    document.querySelectorAll('[data-brand]').forEach(function (el) { el.textContent = CONFIG.brand; });
+    document.getElementById('offer-num').textContent = CONFIG.price;
+
+    // Liens WhatsApp avec message prérempli
+    document.querySelectorAll('[data-wa]').forEach(function (a) {
+      var msg = t('wa.' + a.getAttribute('data-wa')) || t('wa.general');
+      a.href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(msg);
+      a.target = '_blank';
+      a.rel = 'noopener';
+    });
+
+    // Prix dans les blocs produits
+    document.querySelectorAll('[data-price]').forEach(function (el) {
+      el.textContent = CONFIG.price ? t('price.line', V) : t('price.ask');
+    });
+
+    // Boutons de langue
+    document.querySelectorAll('#lang button').forEach(function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-lang') === lang ? 'true' : 'false');
+    });
+  }
+
+  // Coordonnées du pied de page
+  var mail = document.getElementById('mail');
+  mail.href = 'mailto:' + CONFIG.email;
+  mail.textContent = CONFIG.email;
+  document.getElementById('foot-wa-num').textContent = prettyPhone(CONFIG.whatsapp);
+
+  // Chargement des traductions : translations.json, puis translation.json en secours
+  function loadTranslations() {
+    if (dict) return Promise.resolve(dict);
+    if (loading) return loading;
+    loading = fetch('translations.json', { cache: 'no-cache' })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .catch(function () {
+        return fetch('translation.json', { cache: 'no-cache' })
+          .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+      })
+      .then(function (data) { dict = data; loading = null; return data; })
+      .catch(function (e) { loading = null; throw e; });
+    return loading;
+  }
+
+  // Premier affichage (français, sans attendre le fichier JSON)
+  apply();
+
+  loadTranslations()
+    .then(function () {
+      if (!userChose) lang = pickLang();
+      apply();
+    })
+    .catch(function () { /* La page reste en français */ });
+
+  document.getElementById('lang').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-lang]');
+    if (!b) return;
+    var wanted = b.getAttribute('data-lang');
+    userChose = true;
+    try { localStorage.setItem(STORAGE_KEY, wanted); } catch (err) {}
+    if (wanted === 'fr') { lang = 'fr'; apply(); return; }
+    loadTranslations()
+      .then(function () { lang = wanted; apply(); })
+      .catch(function () {
+        lang = 'fr';
+        apply();
+        showToast('Traductions indisponibles pour le moment.');
+      });
+  });
+
+  // Bouton « Essayer Neo » : ouvre le widget s’il est chargé, sinon descend à la section Neo
+  document.querySelectorAll('[data-open-neo]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var trigger = document.getElementById('neo-chat-trigger');
+      var win = document.getElementById('neo-chat-window');
+      if (!trigger) { location.hash = 'outils'; return; }
+      if (!win || win.style.display !== 'flex') trigger.click();
+      setTimeout(function () {
+        var input = document.getElementById('neo-user-msg');
+        if (input) input.focus();
+      }, 300);
+    });
+  });
+
+  // Barres d’ancienneté : une seule animation, quand elles apparaissent à l’écran
+  var bars = document.querySelectorAll('.aging');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.5 });
+    bars.forEach(function (b) { io.observe(b); });
+  } else {
+    bars.forEach(function (b) { b.classList.add('in'); });
+  }
+})();
+</script>
 
 <!-- Neo, en direct -->
 <script src="https://neocompanybot.vercel.app/widget.js?v=7" data-key="9c37d3c0cd134b23"></script>
 
 </body>
-        </html>
+  </html>
